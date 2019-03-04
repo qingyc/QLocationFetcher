@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">qlocaiotnlib</string>
+    <string name="toast_check_open_location_service">Unable to detect location, please make sure your location access is enabled.</string>
+    <string name="toast_no_net">Network error, please check and try again</string>
+    <string name="toast_locate_fail">Failed to detect location</string>
+    <string name="toast_load_failed">Load failed, please try again</string>
+</resources>
