@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.widget.Toast;
 import com.google.android.gms.location.*;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -50,7 +51,7 @@ public class QLocationFetcher {
     private Handler mHandler = new Handler();
 
     public boolean hasStopLocate = false;
-    private boolean mShowTip = false;
+    private boolean mToastError = false;
     private ArrayList<LocationCallBack> currentCallBacks = new ArrayList<>();
 
     public interface LocationCallBack {
@@ -78,11 +79,11 @@ public class QLocationFetcher {
     /**
      * @param context
      * @param callBack
-     * @param showTip  是否显示提示
+     * @param toastError 是否显示提示
      */
     @SuppressLint("CheckResult")
     public void getLocation(final FragmentActivity context,
-                            final Boolean showTip,
+                            final Boolean toastError,
                             final LocationCallBack callBack) {
         if (currentCallBacks.contains(callBack)) {
             return;
@@ -90,22 +91,21 @@ public class QLocationFetcher {
         if (callBack != null) {
             currentCallBacks.add(callBack);
         }
-        this.mShowTip = showTip;
-        requestLocation(context, callBack, showTip);
+        this.mToastError = toastError;
+        requestLocation(context, callBack);
     }
 
     private void requestLocation(final FragmentActivity context,
-                                 final LocationCallBack callBack,
-                                 final Boolean showTip) {
+                                 final LocationCallBack callBack) {
         hasStopLocate = false;
         mHandler.removeCallbacksAndMessages(null);
         Runnable mStopLocateRunnable = new Runnable() {
             @Override
             public void run() {
                 if (mLocation == null && !hasStopLocate) {
-                    if (mShowTip) {
-//                        Toast.makeText(context, R.string.toast_locate_fail, Toast.LENGTH_SHORT)
-//                                .show();
+                    if (mToastError) {
+                        Toast.makeText(context, R.string.toast_locate_fail, Toast.LENGTH_SHORT)
+                                .show();
                     }
                 }
                 stopLocate();
@@ -115,7 +115,7 @@ public class QLocationFetcher {
         mHandler.postDelayed(mStopLocateRunnable, AUTO_STOP_LOCATION_TIME);
 
         try {
-            getAndroidLocation(context, callBack, showTip);
+            getAndroidLocation(context);
         } catch (Exception e) {
             if (BuildConfig.DEBUG && e != null) {
                 Log.e(TAG, e.toString());
@@ -124,7 +124,7 @@ public class QLocationFetcher {
         try {
             ProviderInstaller.installIfNeeded(context);
             //是否开启google定位
-            getFusedLocation(context, callBack);
+            getFusedLocation(context);
         } catch (Exception e) {
             if (BuildConfig.DEBUG && e != null) {
                 Log.e(TAG, e.toString());
@@ -134,7 +134,7 @@ public class QLocationFetcher {
 
     }
 
-    private void getFusedLocation(FragmentActivity context, final LocationCallBack callBack) {
+    private void getFusedLocation(FragmentActivity context) {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
 
         //获取更新的位置
@@ -187,9 +187,7 @@ public class QLocationFetcher {
     }
 
     @SuppressLint("MissingPermission")
-    private void getAndroidLocation(FragmentActivity context,
-                                    final LocationCallBack callBack,
-                                    Boolean showTip) {
+    private void getAndroidLocation(FragmentActivity context) {
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (mLocationManager == null) {
             return;
@@ -244,9 +242,9 @@ public class QLocationFetcher {
         if (gpsProviderIsNotAllow && netProviderIsNotAllow) {
             hasStopLocate = true;
             stopLocate();
-            if (showTip) {
-//                Toast.makeText(context, context.getString(R.string.toast_check_open_location_service), Toast.LENGTH_SHORT)
-//                        .show();
+            if (mToastError) {
+                Toast.makeText(context, context.getString(R.string.toast_check_open_location_service), Toast.LENGTH_SHORT)
+                        .show();
             }
             return;
         }

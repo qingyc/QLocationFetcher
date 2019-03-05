@@ -17,13 +17,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, QLocationFetcher
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        bt_.setOnClickListener(this)
+        QLogger.init(BuildConfig.DEBUG)
+        bt_get_location.setOnClickListener(this)
     }
 
 
     @SuppressLint("CheckResult")
     override fun onClick(v: View?) {
-
         val rxPermissions = RxPermissions(this@MainActivity)
         rxPermissions.requestEachCombined(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -47,8 +47,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, QLocationFetcher
             }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onLocationCallBack(location: Location?) {
-        QLogger.e("get location :  ==== " + location.toString())
+        QLogger.e("get location :  ==== " + location?.toString())
+        tv_location.text = "location === ${location?.toString()}"
     }
 
 }

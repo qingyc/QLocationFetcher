@@ -30,5 +30,5 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:16.0.0'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
     //logger
-    api 'com.github.qingyc:QLogger:0.1'
+    api 'com.github.qingyc:QLogger:0.3'
 }
