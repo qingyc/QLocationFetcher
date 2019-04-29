@@ -1,7 +1,7 @@
 # QLocationFetcher
 通过gms api和Android api两种方式获取定位
 
-![Location](https://github.com/qingyc/QLocationFetcher/art/location.png)
+![Location](https://github.com/qingyc/QLocationFetcher/blob/master/art/location.png)
 
 
 # How To Use
